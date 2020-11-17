@@ -21,6 +21,36 @@ def test_graph_coalescer():
     assert isinstance(p.new_props['enriched_nodes'],list)
     assert len(p.added_nodes)==1
 
+def test_gene_taxon():
+    """Do a bunch of genes return in taxon -> human?  That's a dumb result, but it is happening"""
+    curies = [ "NCBIGene:7200", "NCBIGene:5805", "NCBIGene:7124", "NCBIGene:12", "NCBIGene:83985", "NCBIGene:54478",
+               "NCBIGene:1401", "NCBIGene:160622", "NCBIGene:11113", "NCBIGene:790", "NCBIGene:10439", "NCBIGene:6651",
+               "NCBIGene:640", "NCBIGene:4141", "NCBIGene:1677", "NCBIGene:5914", "NCBIGene:9104", "NCBIGene:5447",
+               "NCBIGene:85480", "NCBIGene:1956", "NCBIGene:9457", "NCBIGene:10129", "NCBIGene:462", "NCBIGene:5978",
+               "NCBIGene:5741", "NCBIGene:65057", "NCBIGene:920", "NCBIGene:50943", "NCBIGene:4810", "NCBIGene:196",
+               "NCBIGene:828", "NCBIGene:1431", "NCBIGene:355", "NCBIGene:25759", "NCBIGene:4149", "NCBIGene:367",
+               "NCBIGene:56005", "NCBIGene:7099", "NCBIGene:54440", "NCBIGene:1825", "NCBIGene:1674", "NCBIGene:6430",
+               "NCBIGene:7054", "NCBIGene:8161", "NCBIGene:124872", "NCBIGene:847", "NCBIGene:80271", "NCBIGene:1636",
+               "NCBIGene:3266", "NCBIGene:26762", "NCBIGene:1611", "NCBIGene:637", "NCBIGene:572", "NCBIGene:1154",
+               "NCBIGene:2232", "NCBIGene:4056", "NCBIGene:9536", "NCBIGene:326", "NCBIGene:958", "NCBIGene:22858",
+               "NCBIGene:6010", "NCBIGene:10603", "NCBIGene:2022", "NCBIGene:11092", "NCBIGene:6476", "NCBIGene:5742",
+               "NCBIGene:126669", "NCBIGene:2056", "NCBIGene:3630", "NCBIGene:8685", "NCBIGene:5743", "NCBIGene:55806",
+               "NCBIGene:4118", "NCBIGene:9235", "NCBIGene:831", "NCBIGene:929", "NCBIGene:9146", "NCBIGene:7450",
+               "NCBIGene:5091", "NCBIGene:240", "NCBIGene:51324", "NCBIGene:4712" ]
+    nc = len(curies)
+    opportunity = Opportunity('hash',('qg_0','gene'),curies,range(nc))
+    opportunities=[opportunity]
+    patches = gc.coalesce_by_graph(opportunities)
+    assert len(patches) == 1
+    #patch = [qg_id that is being replaced, curies (kg_ids) in the new combined set, props for the new curies, answers being collapsed]
+    p = patches[0]
+    assert p.qg_id == 'qg_0'
+    assert len(p.set_curies) == 3 # 3 of the 3 curies are subclasses of the output
+    assert p.new_props['coalescence_method'] == 'graph_enrichment'
+    assert p.new_props['p_value'] < 1e-10
+    assert isinstance(p.new_props['enriched_nodes'],list)
+    assert len(p.added_nodes)==1
+
 def test_graph_coalescer_perf_test():
     from src.single_node_coalescer import coalesce
     import datetime
