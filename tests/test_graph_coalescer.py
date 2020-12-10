@@ -51,6 +51,25 @@ def test_gene_taxon():
     assert isinstance(p.new_props['enriched_nodes'],list)
     assert len(p.added_nodes)==1
 
+def test_graph_coalescer_schizophrenia():
+    from src.single_node_coalescer import coalesce
+    import datetime
+
+    # get a timestamp
+    t1 = datetime.datetime.now()
+
+    # get the path to the test file
+    test_filename = os.path.join(os.path.abspath(os.path.dirname(__file__)),'treatsSchizophrenia_nc.json')
+
+    # open the file and load it
+    with open(test_filename,'r') as tf:
+        incoming = json.load(tf)
+        #incoming = incoming['message']
+
+    # call function that does property coalesce
+    coalesced = coalesce(incoming, method='graph')
+    assert True
+
 def test_graph_coalescer_perf_test():
     from src.single_node_coalescer import coalesce
     import datetime

@@ -243,6 +243,9 @@ def get_enriched_links(nodes, semantic_type, nodes_to_links,lcounts, sfcache, ty
             nodeset_to_links[frozenset(snodes)].append(link)
     logger.debug ('end get_shared_links()')
 
+    print(links_to_nodes[('NCBIGene:1813','decreases_activity_of',True)])
+    print(nodes)
+
     logger.debug(f'{len(nodeset_to_links)} nodeset links discovered.')
 
     #rm = RobokopMessenger()
@@ -250,7 +253,10 @@ def get_enriched_links(nodes, semantic_type, nodes_to_links,lcounts, sfcache, ty
 
     logger.info(f'{len(nodeset_to_links.items())} possible shared links discovered.')
 
+    print('Number of nodesets', len(nodeset_to_links))
+    nn = 0
     for nodeset, possible_links in nodeset_to_links.items():
+        #print(len(possible_links), len(nodeset))
         enriched = []
         for newcurie,predicate,is_source in possible_links:
             # The hypergeometric distribution models drawing objects from a bin.
@@ -298,13 +304,27 @@ def get_enriched_links(nodes, semantic_type, nodes_to_links,lcounts, sfcache, ty
                 #sf_out.write(f'{x-1}\t{total_node_count}\t{n}\t{ndraws}\t{sfcache[args]}\t{p_binom}\t{p_pois}\t{p_norm}\n')
             enrichp = sfcache[args]
 
+#            if newcurie == 'NCBIGene:1813':
+#                print(newcurie,predicate,x,ndraws,n,total_node_count,enrichp)
+
             if enrichp < pcut:
                 node_types = typecache[newcurie]
                 enriched.append((enrichp, newcurie, predicate, is_source, ndraws, n, total_node_count, nodeset, node_types))
         if len(enriched) > 0:
+            nn+=1
+            enriched.sort()
+            ps = [x[0] for x in enriched]
+            cs = [x[1] for x in enriched]
+            ps.sort()
+            print(len(enriched), ps)
+            print(cs)
             results += enriched
 
+    print('Number of nodesets with enriched nodes',nn)
     results.sort()
+    #for x in results:
+    #    print(x[0],len(x[7]),x[5],x[1],x[2])
+    print(len(results))
 
     logger.debug ('end get_enriched_links()')
     return results

@@ -30,6 +30,8 @@ class NewNode:
         self.newnode_type = newnodetype
         self.new_edges = edge_type
         self.newnode_is = newnode_is
+    def __repr__(self):
+        return (f'{self.newnode} ({self.newnode_type})')
 
 
 class PropertyPatch:
